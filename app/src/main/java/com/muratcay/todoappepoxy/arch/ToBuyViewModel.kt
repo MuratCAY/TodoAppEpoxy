@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.muratcay.todoappepoxy.database.AppDatabase
 import com.muratcay.todoappepoxy.database.entity.CategoryEntity
 import com.muratcay.todoappepoxy.database.entity.ItemEntity
+import com.muratcay.todoappepoxy.database.entity.ItemWithCategoryEntity
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -14,9 +15,10 @@ class ToBuyViewModel : ViewModel() {
     private lateinit var repository: ToBuyRepository
 
     val itemEntitiesLiveData = MutableLiveData<List<ItemEntity>>()
+    val itemWithCategoryEntitiesLiveData = MutableLiveData<List<ItemWithCategoryEntity>>()
     val categoryEntitiesLiveData = MutableLiveData<List<CategoryEntity>>()
 
-    val transactionCompleteLiveData = MutableLiveData<Boolean>()
+    val transactionCompleteLiveData = MutableLiveData<Event<Boolean>>()
 
     fun init(appDatabase: AppDatabase) {
         repository = ToBuyRepository(appDatabase)
@@ -25,6 +27,12 @@ class ToBuyViewModel : ViewModel() {
         viewModelScope.launch {
             repository.getAllItems().collect { items ->
                 itemEntitiesLiveData.postValue(items)
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getAllItemWithCategoryEntities().collect { items ->
+                itemWithCategoryEntitiesLiveData.postValue(items)
             }
         }
 
@@ -40,7 +48,7 @@ class ToBuyViewModel : ViewModel() {
         viewModelScope.launch {
             repository.insertItem(itemEntity)
 
-            transactionCompleteLiveData.postValue(true)
+            transactionCompleteLiveData.postValue(Event(true))
         }
     }
 
@@ -54,7 +62,7 @@ class ToBuyViewModel : ViewModel() {
         viewModelScope.launch {
             repository.updateItem(itemEntity)
 
-            transactionCompleteLiveData.postValue(true)
+            transactionCompleteLiveData.postValue(Event(true))
         }
     }
     // endregion CategoryEntity
@@ -64,7 +72,7 @@ class ToBuyViewModel : ViewModel() {
         viewModelScope.launch {
             repository.insertCategory(categoryEntity)
 
-            transactionCompleteLiveData.postValue(true)
+            transactionCompleteLiveData.postValue(Event(true))
         }
     }
 
@@ -78,7 +86,7 @@ class ToBuyViewModel : ViewModel() {
         viewModelScope.launch {
             repository.updateCategory(categoryEntity)
 
-            transactionCompleteLiveData.postValue(true)
+            transactionCompleteLiveData.postValue(Event(true))
         }
     }
     // endregion CategoryEntity

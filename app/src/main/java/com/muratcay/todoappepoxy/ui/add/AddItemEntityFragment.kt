@@ -11,14 +11,15 @@ import com.muratcay.todoappepoxy.database.entity.ItemEntity
 import com.muratcay.todoappepoxy.databinding.FragmentAddItemEntityBinding
 import java.util.*
 
-class AddItemEntityFragment : BaseFragment<FragmentAddItemEntityBinding>(FragmentAddItemEntityBinding::inflate) {
+class AddItemEntityFragment :
+    BaseFragment<FragmentAddItemEntityBinding>(FragmentAddItemEntityBinding::inflate) {
 
     private val safeArgs: AddItemEntityFragmentArgs by navArgs()
 
     private val selectedItemEntity: ItemEntity? by lazy {
-        sharedViewModel.itemEntitiesLiveData.value?.find {
-            it.id == safeArgs.selectedItemEntityId
-        }
+        sharedViewModel.itemWithCategoryEntitiesLiveData.value?.find {
+            it.itemEntity.id == safeArgs.selectedItemEntityId
+        }?.itemEntity
     }
     private var isInEditMode: Boolean = false
 
@@ -58,9 +59,8 @@ class AddItemEntityFragment : BaseFragment<FragmentAddItemEntityBinding>(Fragmen
             }
         })
 
-        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { complete ->
-            if (complete) {
-
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let {
                 if (isInEditMode) {
                     navigateUp()
                     return@observe
@@ -110,10 +110,6 @@ class AddItemEntityFragment : BaseFragment<FragmentAddItemEntityBinding>(Fragmen
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        sharedViewModel.transactionCompleteLiveData.postValue(false)
-    }
 
     private fun saveItemEntityToDatabase() {
         val itemTitle = binding.titleEditText.text.toString().trim()
@@ -141,7 +137,6 @@ class AddItemEntityFragment : BaseFragment<FragmentAddItemEntityBinding>(Fragmen
                 description = itemDescription,
                 priority = itemPriority
             )
-
             sharedViewModel.updateItem(itemEntity)
             return
         }
@@ -154,7 +149,6 @@ class AddItemEntityFragment : BaseFragment<FragmentAddItemEntityBinding>(Fragmen
             createdAt = System.currentTimeMillis(),
             categoryId = "" // todo update this later when we have categories in the app!
         )
-
         sharedViewModel.insertItem(itemEntity)
     }
 }

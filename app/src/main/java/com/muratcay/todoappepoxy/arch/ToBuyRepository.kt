@@ -3,6 +3,7 @@ package com.muratcay.todoappepoxy.arch
 import com.muratcay.todoappepoxy.database.AppDatabase
 import com.muratcay.todoappepoxy.database.entity.CategoryEntity
 import com.muratcay.todoappepoxy.database.entity.ItemEntity
+import com.muratcay.todoappepoxy.database.entity.ItemWithCategoryEntity
 import kotlinx.coroutines.flow.Flow
 
 class ToBuyRepository(
@@ -24,6 +25,10 @@ class ToBuyRepository(
 
     fun getAllItems(): Flow<List<ItemEntity>> {
         return appDatabase.itemEntityDao().getAllItemEntities()
+    }
+
+    fun getAllItemWithCategoryEntities(): Flow<List<ItemWithCategoryEntity>> {
+        return appDatabase.itemEntityDao().getAllItemWithCategoryEntities()
     }
     // endregion ItemEntity
 

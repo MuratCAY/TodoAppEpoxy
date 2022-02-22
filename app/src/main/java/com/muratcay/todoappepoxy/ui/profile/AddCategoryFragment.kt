@@ -7,27 +7,24 @@ import com.muratcay.todoappepoxy.database.entity.CategoryEntity
 import com.muratcay.todoappepoxy.databinding.FragmentAddCategoryBinding
 import java.util.*
 
-class AddCategoryFragment : BaseFragment<FragmentAddCategoryBinding>(FragmentAddCategoryBinding::inflate) {
+class AddCategoryFragment :
+    BaseFragment<FragmentAddCategoryBinding>(FragmentAddCategoryBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.categoryNameEditText.requestFocus()
         mainActivity.showKeyboard(requireView())
+
         binding.saveButton.setOnClickListener {
             saveCategoryToDatabase()
         }
 
-        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { completed ->
-            if (completed) {
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let {
                 navigateUp()
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        sharedViewModel.transactionCompleteLiveData.postValue(false)
     }
 
     private fun saveCategoryToDatabase() {
@@ -41,7 +38,6 @@ class AddCategoryFragment : BaseFragment<FragmentAddCategoryBinding>(FragmentAdd
             id = UUID.randomUUID().toString(),
             name = categoryName
         )
-
         sharedViewModel.insertCategory(categoryEntity)
     }
 }

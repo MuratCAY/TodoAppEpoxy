@@ -8,6 +8,7 @@ import com.muratcay.todoappepoxy.database.dao.CategoryEntityDao
 import com.muratcay.todoappepoxy.database.dao.ItemEntityDao
 import com.muratcay.todoappepoxy.database.entity.CategoryEntity
 import com.muratcay.todoappepoxy.database.entity.ItemEntity
+import com.muratcay.todoappepoxy.database.entity.ItemWithCategoryEntity
 
 @Database(
     entities = [ItemEntity::class, CategoryEntity::class],

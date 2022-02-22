@@ -8,7 +8,8 @@ import com.muratcay.todoappepoxy.R
 import com.muratcay.todoappepoxy.database.entity.ItemEntity
 import com.muratcay.todoappepoxy.databinding.FragmentHomeBinding
 
-class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), ItemEntityInterface {
+class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
+    ItemEntityInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -20,8 +21,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         val controller = HomeEpoxyController(this)
         binding.epoxyRecyclerView.setController(controller)
 
-        sharedViewModel.itemEntitiesLiveData.observe(viewLifecycleOwner) { itemEntityList ->
-            controller.itemEntityList = itemEntityList as ArrayList<ItemEntity>
+        sharedViewModel.itemWithCategoryEntitiesLiveData.observe(viewLifecycleOwner) { items ->
+            controller.items = items
         }
 
         // Setup swipe-to-delete
@@ -36,8 +37,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                     position: Int,
                     direction: Int
                 ) {
-                    val itemThatWasRemoved = model?.itemEntity ?: return
-                    sharedViewModel.deleteItem(itemThatWasRemoved)
+                    val itemThatWasRemoved = model?.item ?: return
+                    sharedViewModel.deleteItem(itemThatWasRemoved.itemEntity)
                 }
             })
     }
@@ -59,7 +60,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     }
 
     override fun onItemSelected(itemEntity: ItemEntity) {
-        val navDirections = HomeFragmentDirections.actionHomeFragmentToAddItemEntityFragment(itemEntity.id)
+        val navDirections =
+            HomeFragmentDirections.actionHomeFragmentToAddItemEntityFragment(itemEntity.id)
         navigateViaNavGraph(navDirections)
     }
 }
