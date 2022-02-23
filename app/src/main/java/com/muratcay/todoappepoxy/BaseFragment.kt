@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavDirections
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.color.MaterialColors
 import com.muratcay.todoappepoxy.arch.ToBuyViewModel
 import com.muratcay.todoappepoxy.database.AppDatabase
 
@@ -40,6 +42,10 @@ abstract class BaseFragment<VB : ViewBinding>(
         mainActivity.navController.navigate(navDirections)
     }
 
+    @ColorInt
+    protected fun getAttrColor(attrResId: Int): Int {
+        return MaterialColors.getColor(requireView(), attrResId)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

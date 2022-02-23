@@ -1,5 +1,6 @@
 package com.muratcay.todoappepoxy.arch
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,10 @@ class ToBuyViewModel : ViewModel() {
     val categoryEntitiesLiveData = MutableLiveData<List<CategoryEntity>>()
 
     val transactionCompleteLiveData = MutableLiveData<Event<Boolean>>()
+
+    private val mutableCategoriesViewStateLiveData = MutableLiveData<CategoriesViewState>()
+    val categoriesViewState: LiveData<CategoriesViewState>
+        get() = mutableCategoriesViewStateLiveData
 
     fun init(appDatabase: AppDatabase) {
         repository = ToBuyRepository(appDatabase)
@@ -41,6 +46,25 @@ class ToBuyViewModel : ViewModel() {
                 categoryEntitiesLiveData.postValue(categories)
             }
         }
+    }
+
+    fun onCategorySelected(categoryId: String) {
+        val loadingViewState = CategoriesViewState(isLoading = true)
+        mutableCategoriesViewStateLiveData.postValue(loadingViewState)
+
+        val categories = categoryEntitiesLiveData.value ?: return
+        val viewStateItemList = ArrayList<CategoriesViewState.Item>()
+        categories.forEach {
+            viewStateItemList.add(
+                CategoriesViewState.Item(
+                    categoryEntity = it,
+                    isSelected = it.id == categoryId
+                )
+            )
+        }
+
+        val viewState = CategoriesViewState(itemList = viewStateItemList)
+        mutableCategoriesViewStateLiveData.postValue(viewState)
     }
 
     // region ItemEntity
